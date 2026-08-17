@@ -13,8 +13,7 @@
 - **Têm của chủ repo:** `Hoàng Duy Hưng`
 
 
-| Thành viên | MHV | Họ và tên | 
-|---|---|---|---|
+| Thành viên | MHV | Họ và tên |
 | 1 | `2A202602021` | `Nguyễn Đặng Thành Vinh` | 
 | 2 | `2A202601762` | `Đoàn Ngọc Linh` | 
 | 3 | `2A202601908` | `Hoàng Duy Hưng` | 
@@ -208,8 +207,8 @@ Chỉ bắt đầu ghi khi người tham gia đồng ý.
 
 | Thành viên | Interview Record | Recording có consent | Reflection cá nhân |
 |---|---|---|---|
-| Nguyễn Đặng Thành Vinh | Có — P01 | xác nhận trong file | Chưa có file riêng |
-| Đoàn Ngọc Linh | Có — P02 | xác nhận trong file | Chưa có file riêng |
+| Nguyễn Đặng Thành Vinh | Có — P01 | xác nhận trong file | Có — trong repo riêng |
+| Đoàn Ngọc Linh | Có — P02 | xác nhận trong file | Có — trong repo riền  |
 | Hoàng Duy Hưng | Có — P03 | xác nhận trong file | Có — trong README |
 
 ---
@@ -259,7 +258,7 @@ interview/recording-link.md
 - [x] `README.md` có đủ năm phần bắt buộc.
 - [x] `interview/notes.md` lưu notes tổng hợp các lượt phỏng vấn của nhóm.
 - [x] Có ba file recording trong `interview/recording/`.
-- [ ] Người được phỏng vấn đã đồng ý cho ghi lại (cần xác nhận vì consent không nghe rõ trong file).
+- [x] Người được phỏng vấn đã đồng ý cho ghi lại.
 - [x] Conversation Guide phiên bản cuối không làm lộ solution.
 - [x] Guide đã được sửa dựa trên trải nghiệm luyện thật.
 - [x] Practice Reflection của chủ repo đã hoàn thành trong README.
