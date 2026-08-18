@@ -6,19 +6,19 @@ Ba option cùng giải một task: sau một bài học, học viên tập hợp
 
 Khác biệt cần test không phải UI, mà là **ai diễn giải traces và ai khởi tạo bản note**.
 
-### Trigger riêng của Option A / Wild
+### Trigger riêng của Standard
 
 - Ngay sau mỗi highlight trong lúc học, learner phân loại: **Điểm chính / Chưa hiểu-câu hỏi / Tham khảo**.
-- Khi learner mở note hoặc kết thúc bài, AI dùng các trace đã được phân loại để tạo brief.
-- Escalation chỉ xuất hiện khi learner chủ động gửi một mục cần làm rõ.
+- Việc phân loại được ghi trực tiếp vào ba vùng của note; hệ thống không diễn giải hay tạo brief.
+- Khi kết thúc bài, learner chỉ rà lại và lưu note đã được tích lũy trong lúc học.
 
-Không có trigger chung trong constants. Option B và C vẫn dùng trigger cuối bài.
+Không có trigger chung trong constants. Standard++ và Wild vẫn dùng trigger cuối bài.
 
 | Option / level | Solution | Cơ chế cốt lõi | Ai khởi tạo/diễn giải |
 |---|---|---|---|
-| C / Standard | **Guided End-of-Lesson Template** | Mẫu “Điểm chính – Chưa hiểu – Việc tiếp theo” | Learner tự tạo và tự diễn giải |
+| C / Standard | **Guided Learning Template** | Learner phân loại trace vào “Điểm chính – Chưa hiểu – Tham khảo” ngay khi highlight | Learner tự tạo và tự diễn giải |
 | B / Standard++ | **Context Notebook** | Gom trace nguyên văn, giữ link về source | Hệ thống tổ chức; learner diễn giải/tổng hợp |
-| A / Wild | **AI Review Brief + Contextual Escalation** | Learner phân loại trace ngay khi highlight; AI tạo note nháp có evidence và mở escalation khi context cần | Learner gắn ý định; AI đề xuất; learner review/quyết định escalation |
+| A / Wild | **AI Review Brief + Contextual Escalation** | AI tạo note nháp có evidence sau bài và mở escalation khi context cần | AI đề xuất; learner review/quyết định escalation |
 
 ## 1. Parking Lot đã mở lại
 
@@ -47,29 +47,31 @@ Không thêm hướng khác. Pool đã có user-led/no-inference (#2, #3); hư�
 | Loại trừ | Không thêm reminder, flashcard, lịch ôn tập, gamification hoặc thay đổi lesson |
 | Metrics | Thời gian hoàn tất; số nơi phải mở; số lần quay lại source; tỷ lệ tìm đúng; trust; có quay lại dùng tài liệu hay không |
 
-## 3. Standard — Guided End-of-Lesson Template
+## 3. Standard — Guided Learning Template
 
-**Promise:** “Kết thúc bài học bằng một bản ghi ngắn, do chính bạn chốt.”
+**Promise:** “Mỗi highlight được đặt đúng chỗ ngay lúc học, để cuối bài bạn đã có bản ghi ngắn do chính bạn chốt.”
 
 ### Mechanism
 
-Hệ thống mở mẫu trống có ba vùng: **Điểm chính / Chưa hiểu / Việc tiếp theo**. Learner tự chọn và gõ nội dung. Hệ thống không tóm tắt, nhóm hay suy luận; traces gốc vẫn xem được làm reference.
+Ngay sau mỗi highlight trong lúc học, hệ thống mở một lựa chọn ngắn: **Điểm chính / Chưa hiểu-câu hỏi / Tham khảo**. Learner gắn nhãn và, nếu cần, viết note ngắn; trace được đưa thẳng vào vùng tương ứng của note. Đến cuối bài, learner rà lại các vùng và tự thêm “Việc tiếp theo” trước khi lưu. Hệ thống không tóm tắt, nhóm hay suy luận; traces gốc vẫn xem được làm reference.
 
 ### User và actors
 
-1. Learner kết thúc lesson, mở mẫu, tự nhớ/chọn nội dung, viết rồi lưu.
-2. Khi cần ôn, learner mở note hoặc source link.
-3. Hệ thống chỉ cung cấp khung, lưu note và giữ reference. Coach/instructor không tham gia flow chính.
+1. Ngay sau mỗi highlight, learner chọn nhãn phân loại ngắn và có thể viết note.
+2. Khi kết thúc lesson, learner rà lại note đã tích lũy, thêm Việc tiếp theo rồi lưu.
+3. Khi cần ôn, learner mở note hoặc source link.
+4. Hệ thống chỉ cung cấp khung, lưu note và giữ reference. Coach/instructor không tham gia flow chính.
 
 ### Trigger và trade-off
 
-- **Trigger:** ngay sau khi learner bấm kết thúc lesson.
-- **Được:** ownership và trust cao; không có rủi ro AI diễn giải sai.
-- **Đổi lại:** tốn công nhất, phụ thuộc trí nhớ/kỷ luật; learner có thể bỏ dở bước tổng hợp.
+- **Classification trigger:** ngay sau mỗi highlight trong lúc learner đang học tài liệu; không chờ đến cuối bài.
+- **Review trigger:** khi kết thúc lesson, learner chỉ rà lại và lưu note đã tích lũy.
+- **Được:** bắt được ý định của learner ngay tại thời điểm highlight, khi context còn rõ; giảm gánh nặng phải nhớ lại “vì sao mình highlight đoạn này” ở cuối bài. Note có cấu trúc sẵn từ hành vi học thật, ownership và trust cao vì learner tự phân loại từng trace.
+- **Đổi lại:** tạo micro-friction trong lúc đọc/học; learner có thể chọn nhãn vội, chọn sai hoặc bỏ qua nếu đang muốn giữ nhịp học. Chất lượng note phụ thuộc vào việc learner hiểu đủ để phân loại tại khoảnh khắc đó, nhất là với các đoạn đang mơ hồ.
 
 ### Cần test
 
-Nếu chỉ cho khung rõ ràng, learner có tự tổng hợp, lưu và tìm lại được note không?
+Learner có chịu phân loại ngay sau highlight mà không thấy bị đứt mạch học không? Việc gắn nhãn tại chỗ có tạo note cuối bài dễ dùng hơn so với gom trace sau bài không, hay chỉ làm tăng thao tác mà không cải thiện khả năng tìm lại và hiểu lại context?
 
 ## 4. Standard++ — Context Notebook
 
@@ -101,23 +103,21 @@ Việc gom traces và giữ context có đủ giảm barrier để learner tổn
 
 ### Mechanism
 
-Ngay sau mỗi highlight trong lúc học, learner phân loại trace thành **Điểm chính**, **Chưa hiểu/câu hỏi** hoặc **Tham khảo**. AI dùng lesson source cùng các traces đã được learner phân loại để tạo **bản nháp** gồm Điểm chính, Chưa hiểu và Việc tiếp theo. Mỗi đề xuất phải có evidence/backlink. Các traces chưa đủ căn cứ để diễn giải nằm trong **Cần làm rõ**. Learner tự sửa/giữ/xóa, tự tìm lại source hoặc gửi contextual question card cho coach/instructor/bạn học. Không lưu hoặc gửi nội dung nào khi learner chưa review.
+Khi learner mở phần note hoặc kết thúc lesson, AI dùng lesson source và traces để tạo **bản nháp** gồm Điểm chính, Chưa hiểu và Việc tiếp theo. Mỗi đề xuất phải có evidence/backlink. Các traces chưa đủ căn cứ để diễn giải nằm trong **Cần làm rõ**. Learner tự sửa/giữ/xóa, tự tìm lại source hoặc gửi contextual question card cho coach/instructor/bạn học. Không lưu hoặc gửi nội dung nào khi learner chưa review.
 
 ### User và actors
 
-1. Ngay sau khi highlight, learner chọn một nhãn phân loại ngắn.
-2. Learner review evidence, sửa/giữ/bỏ từng cụm trong brief và xác nhận note final.
-3. Với Cần làm rõ, learner quyết định tự xử lý hoặc chọn người nhận.
-4. Nếu gửi, learner kiểm tra card gồm câu hỏi, trace liên quan, section/timestamp và source link; sau phản hồi learner tự đóng/giữ mở câu hỏi.
-5. AI/hệ thống đề xuất cấu trúc, gộp traces có evidence và dựng context card. Coach/instructor/bạn học chỉ nhận câu hỏi learner chủ động gửi.
+1. Learner mở brief, review evidence, sửa/giữ/bỏ từng cụm và xác nhận note final.
+2. Với Cần làm rõ, learner quyết định tự xử lý hoặc chọn người nhận.
+3. Nếu gửi, learner kiểm tra card gồm câu hỏi, trace liên quan, section/timestamp và source link; sau phản hồi learner tự đóng/giữ mở câu hỏi.
+4. AI/hệ thống đề xuất cấu trúc, gộp traces có evidence và dựng context card. Coach/instructor/bạn học chỉ nhận câu hỏi learner chủ động gửi.
 
 ### Trigger và trade-off
 
-- **Classification trigger:** ngay sau mỗi highlight trong lúc học, learner phân loại: **Điểm chính / Chưa hiểu-câu hỏi / Tham khảo**. Learner chủ động làm việc này, không chờ tới cuối bài.
-- **Brief trigger:** khi learner mở note hoặc kết thúc bài, AI dùng các traces đã được phân loại để tạo brief.
+- **Brief trigger:** khi learner mở note hoặc kết thúc bài, AI dùng lesson source và traces để tạo brief.
 - **Escalation trigger:** chỉ xuất hiện khi learner chủ động gửi một mục cần làm rõ; không dựa vào suy đoán AI.
 - **Được:** giảm mạnh công sức cấu trúc; không để câu hỏi bị chôn trong note; người hỗ trợ nhận đúng context.
-- **Đổi lại:** AI có thể gộp sai hoặc phân loại sai; review là friction cần thiết để bảo vệ trust. Escalation phụ thuộc người nhận, thời gian phản hồi và quyền riêng tư.
+- **Đổi lại:** AI có thể gộp hoặc diễn giải sai; review là friction cần thiết để bảo vệ trust. Escalation phụ thuộc người nhận, thời gian phản hồi và quyền riêng tư.
 
 ### Cần test
 
@@ -127,8 +127,8 @@ Learner có tin, review và dùng lại AI brief hơn Context Notebook không? C
 
 | So sánh | Khác biệt mechanism, không phải UI |
 |---|---|
-| Standard vs Standard++ | Standard bắt learner tạo note từ mẫu trống; Standard++ gom/định vị toàn bộ trace, nhưng learner vẫn tự diễn giải. |
-| Standard++ vs Wild | Standard++ chỉ tổ chức nguyên văn sau bài; Wild thu ý định của learner ngay khi highlight, rồi cho AI diễn giải/gộp thành bản nháp có evidence và escalation khi cần. |
-| Wild vs Standard | Wild bắt đầu bằng learner phân loại từng highlight trong lúc học, sau đó AI dựng draft để review; Standard bắt learner tự viết toàn bộ note từ đầu sau bài. |
+| Standard vs Standard++ | Standard thu nhãn learner ngay khi highlight và tích lũy note theo nhãn; Standard++ chỉ gom/định vị nguyên văn sau bài, learner vẫn tự diễn giải. |
+| Standard++ vs Wild | Standard++ chỉ tổ chức nguyên văn; Wild cho AI diễn giải/gộp traces thành bản nháp có evidence và escalation khi cần. |
+| Wild vs Standard | Wild khởi tạo note bằng AI draft sau bài để learner review; Standard để learner tự phân loại và tạo note từng trace trong lúc học. |
 
 Chỉ đưa hướng đi tiếp nếu nó cải thiện quan sát được về công sức tập hợp, khả năng tìm đúng context, trust **và** hành vi quay lại dùng. Nếu cả ba được lưu nhưng không được mở lại, dừng tối ưu UI/summary và quay lại kiểm tra Pain Hypothesis B.
