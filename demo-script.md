@@ -133,11 +133,13 @@ Giải thích ba option trên hai trục:
 3. Bấm `Kết thúc lesson & tạo AI brief`.
 4. Chỉnh trực tiếp một draft để cho thấy learner có quyền sửa.
 5. Bấm backlink evidence để quay lại đúng slide.
-6. Bấm `Giữ` một đề xuất; với mục chưa hiểu, mô phỏng `Gửi câu hỏi` sau khi kiểm tra context.
+6. Bấm “Giữ” một đề xuất; mở mockdata **Contextual handoff · Mentor**.
+7. Đọc card: người nhận “Mentor · Dr. Linh”, câu hỏi đã được AI diễn đạt lại, các traces liên quan và backlink về slide.
+8. Chỉnh câu hỏi nếu cần rồi bấm “Gửi cho mentor”; chỉ ra trạng thái “Đã gửi cho mentor”.
 
 ### Lời nói sau thao tác
 
-> A giảm mạnh công sức cấu trúc, nhưng đổi lại cần review bắt buộc vì AI có thể gộp sai hoặc diễn giải vượt evidence. Escalation không phải AI tự quyết định gửi cho coach; learner kiểm tra question card, người nhận và context rồi mới gửi.
+> A giảm mạnh công sức cấu trúc, nhưng đổi lại cần review bắt buộc vì AI có thể gộp sai hoặc diễn giải vượt evidence. Mockdata này cho thấy handoff không phải “AI tự gửi”: AI chỉ dựng card, còn learner kiểm tra người nhận, câu hỏi, traces và source rồi mới bấm gửi. Card cũng chỉ gửi context liên quan, không gửi toàn bộ note.
 
 ### Câu hỏi cần test
 
@@ -177,4 +179,3 @@ Giải thích ba option trên hai trục:
 > Nếu C giảm sai context nhưng micro-friction quá lớn, B có thể là baseline tốt hơn. Nếu B giảm công sức nhưng note vẫn không được mở lại, cần quay lại kiểm tra Pain Hypothesis B. Nếu A tiết kiệm nhiều thời gian nhưng learner không tin draft, không nên tối ưu thêm UI trước khi giải quyết trust và evidence.
 
 **Kết thúc demo bằng:** mở `Lịch sử buổi học`, chỉ ra mỗi phiên được lưu theo option, số trace, source và thời gian. Đây là cầu nối cho return test sau 24 giờ, không phải một tính năng ngoài scope để làm demo đẹp hơn.
-
