@@ -1,0 +1,562 @@
+From RAG workﬂow to
+Agentic RAG
+Agenda
+01
+     RAG Workﬂow
+     The original idea of RAG
+
+
+
+
+02
+     Anatomy of RAG Workﬂow
+     How is RAG workﬂow implemented under the hood
+
+
+
+
+03
+     RAG Evaluation
+     Evaluation of RAG system
+
+
+
+
+04
+     Advanced RAG + Agentic RAG
+     Advanced RAG techniques and how RAG is reshaped in
+     agentic system
+      RAG Workﬂow
+
+Conventional Workﬂow RAG: The "Retrieve-Then-Generate" Modular
+Blueprint
+
+    User Input Query                   Retriever Module                 Prompt Augmentor                   Generator / LLM
+
+
+ Linear Initiation                  Search & Extract                  Context Injection                 Passive Synthesis
+ The journey begins when            The query scans through           Combines the original             The LLM receives the
+ the user's query enters the        the Vector DB to search for       Query + newly retrieved           context-enriched prompt
+ conventional RAG system.           relevant information.             Context Chunks + System           to explain and synthesize
+                                                                      Instructions into a single        information.
+ The query is immediately           The output returns Top-K
+                                                                      prompt.
+ vectorized to prepare for          Chunks containing the                                               Generates the Final Answer
+ the retrieval phase.               closest context.                                                    returned to the user.
+
+
+
+
+             01                                02                                03                                04
+
+
+
+
+           One-Way Static Module Chain: Search runs only once before LLM invocation • No two-way interactive feedback loop
+     RAG Workﬂow
+
+
+The Two Main Pillars of a RAG System
+
+
+  Pillar 1: Ofﬂine Indexing Pipeline (Asynchronous, background processing)             Data preparation & optimization:
+                                                                                       The ofﬂine indexing pipeline runs in the background,
+                                                                                       processing asynchronously to prepare data (Parsing,
+    Parsing          Chunking         Embedding                                        Chunking, Embedding, Vector DB).
+                                                                 Vector DB
+                                                                                       This pillar speciﬁcally prioritizes throughput and data
+                                                                                       accuracy.
+
+
+
+
+                                                                  Data Store
+  Pillar 2: Online Retrieval Pipeline (Synchronous, real-time
+                                                     The central processing)
+                                                                 hub connecting both
+                                                                   pipelines
+
+
+    Query            Retrieval                                                              Reranking             LLM Inference
+
+ Interactive requests:                                                                    Real-time service:
+ Receives queries (Query) and performs rapid                                              Serves users in real time. Requires optimizing for ultra-low latency
+                                                                                          (under 1 second) while ensuring the highest context accuracy.
+ information retrieval (Retrieval).
+     Anatomy of RAG
+
+
+Data Parsing & Extraction: Unifying All Formats into Structured Markdown
+
+   1. Diverse Raw Inputs                                                    2. Modern Parsing Engines                                                3. Clean Semantic Markdown
+
+      Scanned PDFs & Images                                                    Docling (IBM)                                                            # Executive Summary
+      Multi-column layouts with embedded graphic                               Universal document layout converter supporting
+      schematics                                                               multi-format PDF/DOCX to JSON/MD                                         The primary RAG workflow benchmark.
+                                                                                                                                                        ## Key Metrics Table
+      Ofﬁce Docs (DOCX / PPTX)                                                                                                                          | Q3 | Revenue | Growth |
+      Hierarchical text blocks, notes, and visual slides                                                                                                |---|---|---|
+                                                                               MinerU / Marker                                                          | RAG-A | $1.2M | +14% |
+                                                                               Academic-focused parsers designed for complex
+                                                                                                                                                        ## Formula Verification
+                                                                               LaTeX math and formula extraction
+      Financial Reports                                                                                                                                 $$ E = mc^2 \quad \text{and} \quad
+      Complex, nested multi-page tables and balance                                                                                                     \sum_{i=1}^n x_i $$
+      sheets                                                                                                                                            ## Document Schema
+                                                                               VLM Parser (GPT-4o/Claude)                                               ![System Diagram](fig1.png)
+      Scientiﬁc Papers                                                         Vision-Language Models serving as visual OCR
+      Academic layouts containing dense math LaTeX                             pipelines to read raw document canvas
+      equations
+
+
+
+
+    The "Lingua Franca" Philosophy: Why Structured Markdown Rules RAG
+
+       Naive OCR (Broken Semantics) • Incorrect                                                             Structured Markdown (Layout-Aware) • Correct
+       Drops layout rules. Multi-column texts merge blindly, tables break into random line                  Preserves precise hierarchy (# Headings), maintains high-ﬁdelity nested tables, retains
+       fragments, mathematical equations distort into unreadable symbol errors, destroying                  math formulas using LaTeX notation, conserves tokens and optimizes compatibility with
+       context validity.                                                                                    LLMs.
+
+
+
+
+Ref: https://docling.ai/
+https://github.com/opendatalab/mineru
+https://github.com/datalab-to/marker
+   Anatomy of RAG Workﬂow
+
+
+Text Chunking Strategies
+
+
+Strategy                                           Example Chunks                                    What to Notice
+
+
+   Fixed-size + Overlap                                                                              Cuts blindly
+   Strict character limit cuts with context                                                          Overlap preserves boundary context but
+   window                                                                                            duplicates text
+
+
+
+
+   Recursive                                                                                         Dynamic fallback
+   Hierarchical split-and-merge                                                                      Falls back to the largest separator that ﬁts the
+   algorithm                                                                                         size limit
+
+
+
+
+                                                                                                     Preserves meaning
+   Document-based
+                                                                                                     Draws exact boundary boxes around headers
+   Structure-aware boundaries
+                                                                                                     with content
+
+
+
+
+Ref:
+https://weaviate.io/blog/chunking-strategies-for-rag
+https://qdrant.tech/course/essentials/day-1/chunking-strategies/#text-chunking-strategy-comparison
+  Anatomy of RAG Workﬂow
+
+
+Advanced Chunking Strategies
+
+Strategy                                           How it works / Visual                                                                      Trade-off
+
+
+
+
+    Semantic chunking                                                                                                                         Better boundaries
+    Embed sentences detect topic shifts                                                                                                       Requires embedding model run at chunking
+    via similarity drop split                                                                                                                 time
+
+
+
+
+                Late chunking                                                                               Hierarchical
+                Embed full document ﬁrst with long-context model, then chunk &
+               pool                                                                                       Multi-layered tree structuring (Summary Section Paragraph)
+                                                                                                            Multi-granularity retrieval; complex parent tracking
+                Requires specialized long-context embedding models
+
+
+
+                LLM-based chunking                                                                          Agentic chunking
+                LLM summarizes or splits sections into clean semantic
+   psychology                                                                                   smart_toy   Intelligent agent analyzes document format and determines best mix dynamically
+                propositions
+                                                                                                            Most ﬂexible; highly complex system design
+                Highest quality; expensive & slow
+
+
+
+
+Ref:
+https://weaviate.io/blog/chunking-strategies-for-rag#semantic-chunking-context-aware-chunking
+https://www.ﬁrecrawl.dev/blog/best-chunking-strategies-rag
+   Anatomy of RAG Workﬂow
+
+
+Optimizing Vector Search at Scale                                          Small Corpus (All N)          N Database Vectors
+
+
+
+
+                                                                                                                    top-K NN (1)
+
+Challenges & Solutions for Large-Scale Search                               q
+                                                                           Query
+
+Exact KNN Bottleneck (O(N * d)):                                                     all N comparisons
+                                                                                                                    top-K NN (2)
+As data scales to millions of vectors, Exact KNN becomes too slow,
+failing to meet real-time production requirements.
+
+ANN & HNSW Solutions:
+Using Approximate Nearest Neighbors (ANN) with the HNSW algorithm             Cost: N comparisons × d dimensions → O(N · d)
+
+achieves an excellent balance between Recall and Latency.
+
+Vector Compression with IVF-PQ:
+To optimize memory, the IVF-PQ (Inverted File with Product
+Quantization) solution compresses vectors highly efﬁciently.
+
+Flexible Metadata Filtering:
+Utilizing Pre-ﬁltering, Post-ﬁltering, or Single-stage Payload Filtering
+strategies to maintain optimal query speed.
+
+
+
+
+Ref:
+https://www.pinecone.io/learn/series/faiss/hnsw/
+https://milvus.io/learn-milvus/hnsw
+https://cfu288.com/blog/2024-05_visual-guide-to-hnsw/
+     Anatomy of RAG Workﬂow
+
+
+Why use a Vector Database?
+
+
+
+                  Search Library vs. Database                           01         Infrastructure Architecture                    02
+
+
+
+     Search Library (e.g. FAISS, HNSWlib): Provides raw,
+     ultra-fast similarity search inside an in-memory process,                     ANN Library               Core ANN Engine
+     but lacks production systems engineering.
+                                                                                  No Metadata Filter         ✓ Persistence Shell
+     Production Requirements:
+                                                                                                            ✓ Dynamic CRUD APIs
+         ●       Persistence: Vectors persist across process restarts.        Manual Disk Save/Load
+                                                                                                             ✓ Payload Filtering
+         ●       Dynamic CRUD: Modify documents without rebuilding
+                                                                              Single Threaded / Node
+                 indices.                                                                                   ✓ Cluster Replication
+         ●       Metadata Filtering: Combine similarity with hard              In-Process Runtime
+                 constraints.
+         ●       Scalability: Live replication and clustering across nodes.
+     Vector Database (e.g. Qdrant, Weaviate, Milvus): Wraps
+     indexing with storage, APIs, multi-tenant security,
+     clustering, and rich observability.
+
+Ref:
+https://qdrant.tech/articles/what-is-a-vector-database/
+ Anatomy of RAG Workﬂow
+
+
+Modern SOTA Reranking: Listwise Attention & Jina Reranker v3/v3.5
+
+  Why is Pairwise Cross-Encoder Imperfect?                                           Listwise LBNL Reranking Architecture (Jina v3.5)
+  Scoring each [Query, Doc] pair independently completely ignores the
+  cross-correlation context between documents. In practice, Document
+  A may contain foundational context that directly supports a better         Input Window: [Query] | [Doc 1] | [Doc 2] | [Doc 3] | ... | [Doc K]
+  understanding of Document B.
+
+
+                                                                            Transformer: Hybrid 3L2G Attention Matrix
+
+  Listwise Reranking (LBNL Architecture)                                     Global Attention Layer
+
+
+  A breakthrough based on the Last-but-Not-Late philosophy that fully        Sliding-Window Local Layer
+
+  leverages the power of Transformers in a single pass:                      Global Attention Layer
+
+     ●     Input the entire sequence [Query + Doc 1 + ... + Doc K] into a    Sliding-Window Local Layer
+
+           single context window of the model.
+     ●     Compute cross-correlation in just 1 single forward pass
+                                                                                                   Single Forward Pass Extraction
+           instead of repeating it K separate times like traditional
+                                                                             Scores are computed simultaneously and directly from the Last Tokens of each
+           Cross-Encoders.                                                                                   document
+     ●     Extract relevance scores directly from the Last tokens
+           representing each document.
+                                                                              S1 (Doc 1)              S2 (Doc 2)      S3 (Doc 3)           SK (Doc K)
+
+
+                                                                             ⚡ 1.56x Faster than Pairwise | Intra-Document Context Aware | 0.6B Params
+      RAG Evaluation
+
+
+Deterministic RAG Evaluation: Retrieval Ranking & Generation Metrics
+   Nature of Deterministic Metrics: Mathematical, quantitative, 100% reproducible metrics, $0 API cost, measuring Retrieval & Generation layers independently.
+
+
+
+
+    1. Retrieval Layer Metrics (Ranking & Search)
+
+       HIT RATE @ 10                             MRR @ 10                               NDCG @ 10                               MAP @ K & Precision @ K: Ratio of
+                                                                                                                                truly useful chunks out of total retrieved
+       94.0%                                     0.82                                   0.88                                    chunks.
+                                                                                                                                Measures noise and speciﬁcity of the
+       ✓ Target (>90%) met                       ✓ Ideal ﬁrst-chunk rank                ✓ Highly optimized sequence
+                                                                                                                                information ﬁlter.
+
+
+
+
+    2. Generation Metrics (Exact & Semantics)                                               3. System Telemetry & Embedding Drift
+
+                                                                                              P95 LATENCY & COST                     Evidently AI Drift: Monitors
+       EXACT MATCH (EM)                        ROUGE-L & BLEU:
+                                                                                                                                     distribution shift between vector
+       86.2%
+                                               Character-sequence evaluation.                 450ms / $0.0012                        indexing vs query.
+                                               Levenshtein distance for physical text         ⚠ Latency spikes checked               Schema Validation & PII Regex check pass.
+       Short facts/structured                  deviation.
+
+
+
+
+   CI/CD AUTOMATED REGRESSION TEST GATE                                                                                                                             PASSED ✓
+Ref:
+https://deepeval.com/guides/guides-rag-triad
+      RAG Evaluation
+
+
+
+
+LLM-as-a-Judge: Qualitative Evaluation & The RAG Triad
+
+    Why LLM-as-a-Judge?
+    Quantitative metrics like ROUGE & BLEU fall short when
+    evaluating complex semantic alignment and nuanced outputs.                                                                   Query / Input
+    Instead, a highly capable LLM (such as GPT-4o or Claude 3.5
+    Sonnet) acts as an expert "Judge" to qualitatively grade answers     Answer Relevancy                                                                      Contextual Relevancy
+    based on human-like standards.                                       Measures whether the generated answer
+                                                                         directly addresses the core intent of the
+                                                                                                                                                               Assesses how relevant and focused the
+                                                                                                                                                               retrieved context is to the user's input query.
+                                                                         user query.
+
+
+
+
+                                                                                                 Actual Output                                                       Retrieval Context
+    Standard Evaluation Frameworks
+    Using industry-standard toolkits like DeepEval (Conﬁdent AI)                                                     Faithfulness
+    and RAGAS to systemize qualitative tracking:                                                                     Evaluates whether the output claims are
+                                                                                                                     strictly grounded in the retrieved context to
+                                                                                                                     avoid hallucinations.
+
+        ●       G-Eval Framework: Flexible evaluation leveraging
+                custom, structured rubrics tailored to speciﬁc
+                enterprise domain rules.
+        ●       Synthetic Test Data: Automatically generates diverse,
+                high-coverage testing datasets to robustly stress-test
+                RAG pipelines without requiring manual human labeling.
+
+Ref:
+https://deepeval.com/guides/guides-rag-triad
+       Limitations
+
+
+RAG Workﬂow Fails Against 4 Key Limitations
+
+
+
+
+ 01. Structural Loss
+ Vector distance ignores the hierarchical context of documents.
+
+ 02. Multi-Hop Reasoning Failure
+ One-way pipelines cannot chain logic across multiple documents.
+
+ 03. Rigid Query Execution
+ Searches only once without knowing how to self-adjust.
+
+ 04. Hallucination do Noise
+ Optimizing Top-K still accidentally introduces noise into the
+ prompt.
+    Agentic RAG
+
+
+The Shift to Agentic RAG
+
+
+ Workﬂow RAG                                                       Agentic RAG
+ Fixed Pipeline Model                                              Active Agent Brain
+
+
+   User Query           Fixed Pipeline           Output                Planning           Agent Brain         Self-Correction
+
+
+
+   ●     Queries pass through a ﬁxed pipeline to generate             ●    Queries go through the controller brain for
+         results.                                                          Planning, Tool Selection & Execution.
+   ●     Retrieval acts as a static "framework", lacking              ●    Retrieval becomes a ﬂexible "tool" actively
+         dynamic ﬂexibility.                                               invoked by the Agent when needed.
+   ●     Lacks the ability to self-correct or perform                 ●    The system actively evaluates and self-corrects
+         intermediate evaluations.                                         before returning results.
+
+
+
+
+       Core Shift: Retrieval is no longer a ﬁxed "framework," but a ﬂexible "tool" actively controlled by the Agent.
+      Agentic RAG
+
+
+Control Flows in Agentic RAG
+
+
+ 01                                                            02
+ Query Decomposition                                           Dynamic Routing
+ Allows the Agent to autonomously decompose complex            Helps the Agent autonomously and ﬂexibly select between
+ questions into sub-queries for optimal multi-hop retrieval.   optimal resources such as Vector DB, SQL, or Web Search.
+
+
+
+
+ 04                                                            03
+ Self-RAG & Reﬂection                                          Corrective RAG (CRAG)
+ Uses Reﬂection Tokens for the Agent to self-check for         Automatically evaluates retrieval quality and actively redirects
+ hallucinations and accurately adjust answers in real-time.    to Web Search if low-quality internal data is detected.
+      Agentic RAG
+
+ReAct Loop – The Heart of Agentic RAG
+
+
+                                                                 react_loop.py
+                                                                                     1. Think & Plan                          2. Select Tool
+     # Initialize while loop to optimize search
+                                                                                   The think() step analyzes                 The select_tool() step
+     while not agent.confident():                                                  the context to self-direct                actively selects the optimal
+                # 1. Reason & Plan                                                 and build a reasoning plan.               search method.
+                thought = agent.think()
+
+                # 2. Select appropriate tool
+                tool = agent.select_tool()
+                                                                                                                    while
+                # 3. Trigger query & Retrieve
+                data = agent.execute_tool(tool)
+
+                # 4. Memorize & Evaluate results
+                                                                                     4. Memorize                              3. Execute
+                agent.update_memory(data)                                          The update_memory() step                  The execute_tool() step
+                                                                                   accumulates, memorizes                    triggers retrieval and collects
+     # Confidently synthesize the final answer                                     results, and observes to                  raw data.
+     return agent.synthesize_answer()                                              prepare for the next step.
+
+
+
+                                                                                 * The continuous loop completely eliminates the one-way ﬂow, granting absolute
+                                                                                                           autonomy to the Agent.
+
+
+Ref: https://docs.langchain.com/oss/python/deepagents/overview
+       Advanced RAG
+
+
+  Natural Book-Reading Intuition Instead of Vector Chunking
+
+
+     Limitation: Fixed 512-Token Chunking                                                   Reasoning-Based Retrieval
+     Traditional methods chunk documents into ﬁxed
+     512-token vectors, disrupting the natural context                                      1. LLM as an Agent
+     structure and connections between pages.                                               The LLM actively reads the Hierarchical Tree
+                                                                                            Map to reason and precisely locate the branch
+                                                                                            containing the target information.
+                                                                    Discrete Vector Space
+                                                                                            2. Direct Jump Retrieval
+                                                                                            The system jumps directly to the target Page
+                                                                                            Node to extract data without tedious linear
+     Solution: PageIndex Tree                                 Document
+                                                                                            scanning.
+     Structure
+                                                                                            3. Eliminating Vector Databases
+     Builds a hierarchical tree structure                                                  A ﬂawless and precise extraction process that
+     from Document to Page Node.                Index / Chapter            Chapter 2        completely eliminates complex dependencies
+     Approaches data with a natural                                                         on traditional Vector databases.
+     reading intuition: browse TOC, select
+     chapter, select page, then read          Page 1       Page 2            Page 3
+     closely.
+                                               Hierarchical Tree Map (PageIndex Map)
+
+
+
+
+Ref:
+https://pageindex.ai/
+  Production Optimization
+
+
+Optimizing Agentic RAG in Production
+
+
+
+ Prompt & Context Caching                                     Agent Observability & Telemetry
+                                                              Track detailed reasoning steps, Tool Calls, and evaluate safety
+                                                              via monitoring systems like LangSmith or TraceAI.
+                       Prompt Caching is a breakthrough
+  -90%                 technique that efﬁciently stores
+                       and reuses the Agent's repetitive                           0s      0.4s       0.8s       1.2s
+    Cost & Latency     context.
+                                                                   Agent Loop                                            1.20s
+
+
+                                                                   ├─ Thought                315ms
+   Context Compression & Pruning
+                                                                  ├─ Tool: RAG                               540ms
+   Compress prompts before entering the Agent Loop to
+   maximize resource savings and avoid context drift during
+   sessions.                                                     ├─ Safety Guard                                 160ms
+
+
+                                                                   └─ LLM Gen                                            185ms
+                         Compress &
+    Raw Context                                Agent Loop
+                           Prune
+        Finalize
+
+
+Workﬂow RAG vs. Agentic RAG: Decision Matrix
+
+
+  Workﬂow RAG                                                       Agentic RAG
+  Optimized Performance, Speed & Cost                               Ideal for Complex Logic & Reasoning Chains
+
+
+        High Speed & Low Cost                                             Higher Latency & Cost
+       Fast response times, optimized API call costs.                   Due to iterative reasoning loops and multiple LLM calls.
+
+
+        Simple Queries                                                    Complex Problem Solving
+       Best suited for direct information retrieval queries.            Connects multi-hop logic across diverse data sources.
+
+
+        Focus on Parsing & Reranking                                      Self-Correction Capabilities
+       Requires precise data preprocessing and reranking.               Automated self-evaluation, feedback, and reﬁnement.
+
+
+
+
+                          Selection Rule: Fast & Simple ➔ Workﬂow RAG | Complex & Multi-hop ➔ Agentic RAG
+  
+
